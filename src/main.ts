@@ -6,7 +6,7 @@ import { Quiz } from './components/Quiz';
 import { Particles } from './components/Particles';
 
 // Configuração inicial - ALTERE PARA SUA DATA DE NAMORO
-const START_DATE = new Date(2024, 10, 15, 14, 30, 0);
+const START_DATE = new Date(2025, 9, 27, 3, 30, 0);
 
 // Variáveis globais
 let timeCapsule: TimeCapsule | null = null;

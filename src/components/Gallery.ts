@@ -22,55 +22,55 @@ export class Gallery {
         return [
             {
                 id: 1,
-                url: '/assets/primeiro-encontro.jpg', // Exemplo de caminho para a imagem
+                url: 'public/assets/primeiro-encontro.jpg', // Exemplo de caminho para a imagem
                 caption: 'Nosso primeiro "encontro" - data inesquecível',
                 date: new Date(2025, 8, 20)
             },
             {
                 id: 2,
-                url: '/assets/passeioshopp.jpg', // Exemplo de caminho para a imagem
+                url: 'public/assets/passeioshopp.jpg', // Exemplo de caminho para a imagem
                 caption: 'O Passeio especial - só nós dois (Junto da marcação de terriório)',
                 date: new Date(2025, 9, 25)
             },
                         {
                 id: 3,
-                url: '/assets/tardezinha.jpg', // Exemplo de caminho para a imagem
+                url: 'public/assets/tardezinha.jpg', // Exemplo de caminho para a imagem
                 caption: 'Dia perfeito ao seu lado - Quando passamos a tarde vendo Ordem Paranormal',
                 date: new Date(2025, 11, 4)
             },
             {
                 id: 4,
-                url: '/assets/minhacasa.jpg', // Exemplo de caminho para a imagem
+                url: 'public/assets/minhacasa.jpg', // Exemplo de caminho para a imagem
                 caption: 'Nossa primeira viagem - Indo pra minha casa pela primeira vez ksksksks',
                 date: new Date(2025, 11, 7)
             },
                         {
                 id: 5,
-                url: '/assets/desenho.jpg', // Exemplo de caminho para a imagem
+                url: 'public/assets/desenho.jpg', // Exemplo de caminho para a imagem
                 caption: 'O primeiro desenho que você fez pra mim - E eu amei demais, claro',
                 date: new Date(2025, 11, 16)
             },
                         {
                 id: 6,
-                url: '/assets/presente.jpg', // Exemplo de caminho para a imagem
+                url: 'public/assets/presente.jpg', // Exemplo de caminho para a imagem
                 caption: 'O dia que você me deu um presente surpresa - Fiquei tão feliz, foi tão fofo da sua parte',
                 date: new Date(2026, 0, 17)
             },
             {
                 id: 7,
-                url: '/assets/bielssauro.jpg', // Exemplo de caminho para a imagem
+                url: 'public/assets/bielssauro.jpg', // Exemplo de caminho para a imagem
                 caption: 'Cada segundo ao seu lado é único - Vc conhecendo a minha cidade pela primeira vez(Bielssauro)',
                 date: new Date(2026, 1, 28)
             },
             {
                 id: 8,
-                url: '/assets/sonhopc.jpg', // Exemplo de caminho para a imagem
+                url: 'public/assets/sonhopc.jpg', // Exemplo de caminho para a imagem
                 caption: 'Realizando seu sonho - O dia que montei seu PC e vc ficou super feliz (E eu também, claro)',
                 date: new Date(2026, 0, 31)
             },
             {
                 id: 9,
-                url: '/assets/5meses.jpg', // Exemplo de caminho para a imagem
+                url: 'public/assets/5meses.jpg', // Exemplo de caminho para a imagem
                 caption: 'Celebrando 5 meses de muito amor - Passando raiva juntos no Mario Party, mas rindo muito no final',
                 date: new Date(2026, 2, 29)
             }
