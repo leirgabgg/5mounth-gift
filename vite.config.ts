@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import { resolve } from 'path';
 
 export default defineConfig({
+  base: '/',
   root: '.',
   publicDir: 'public',
   server: {
@@ -13,11 +14,7 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: true,
-    rollupOptions: {
-      input: {
-        main: resolve(__dirname, 'index.html')
-      }
-    }
+    emptyOutDir: true
   },
   resolve: {
     alias: {
@@ -28,8 +25,5 @@ export default defineConfig({
       '@styles': resolve(__dirname, './styles'),
       '@assets': resolve(__dirname, './assets')
     }
-  },
-  optimizeDeps: {
-    exclude: []
   }
 });
