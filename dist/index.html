@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="Celebrando 5 meses de amor - Uma jornada especial no tempo">
+    <meta name="theme-color" content="#ff6b6b">
+    <title>Timeless | 5 Meses de Amor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="/assets/main-Bmug45Vv.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/main-BVlor0D0.css">
+</head>
+<body>
+    <canvas id="particles-canvas"></canvas>
+    
+    <div class="app">
+        <nav class="navbar">
+            <div class="nav-logo">
+                <span class="logo-icon">⏳</span>
+                <span class="logo-text">Timeless</span>
+            </div>
+            <div class="nav-links">
+                <button class="nav-link active" data-section="home">Início</button>
+                <button class="nav-link" data-section="timeline">Linha do Tempo</button>
+                <button class="nav-link" data-section="gallery">Memórias</button>
+                <button class="nav-link" data-section="capsule">Cápsula do Tempo</button>
+                <button class="nav-link" data-section="quiz">Quiz</button>
+            </div>
+            <div class="nav-actions">
+                <div class="theme-toggle" id="themeToggle">
+                    <span class="sun">☀️</span>
+                    <span class="moon">🌙</span>
+                </div>
+            </div>
+        </nav>
+
+        <main>
+            <!-- Seção Home -->
+            <section id="home" class="section active">
+                <div class="hero">
+                    <div class="hero-content">
+                        <div class="anniversary-badge">
+                            <span>🎉 5 Meses</span>
+                        </div>
+                        <h1 class="hero-title">
+                            <span class="gradient-text">Nosso Tempo</span>
+                            <br>Juntos é Mágico
+                        </h1>
+                        <p class="hero-subtitle">
+                            Cada segundo ao seu lado é uma página escrita no livro do nosso amor.
+                            Hoje celebramos 5 meses de momentos inesquecíveis.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="timer-container">
+                    <div class="timer-card">
+                        <div class="timer-header">
+                            <h2>⌛ Contador de Tempo</h2>
+                            <p>Desde o dia que tudo começou...</p>
+                        </div>
+                        <div class="timer-grid">
+                            <div class="timer-item">
+                                <div class="timer-value" id="years">0</div>
+                                <div class="timer-label">Anos</div>
+                            </div>
+                            <div class="timer-item">
+                                <div class="timer-value" id="months">0</div>
+                                <div class="timer-label">Meses</div>
+                            </div>
+                            <div class="timer-item">
+                                <div class="timer-value" id="days">0</div>
+                                <div class="timer-label">Dias</div>
+                            </div>
+                            <div class="timer-item">
+                                <div class="timer-value" id="hours">0</div>
+                                <div class="timer-label">Horas</div>
+                            </div>
+                            <div class="timer-item">
+                                <div class="timer-value" id="minutes">0</div>
+                                <div class="timer-label">Minutos</div>
+                            </div>
+                            <div class="timer-item">
+                                <div class="timer-value" id="seconds">0</div>
+                                <div class="timer-label">Segundos</div>
+                            </div>
+                        </div>
+                        <div class="timer-message" id="timerMessage"></div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">💑</div>
+                        <div class="stat-value" id="totalHours">0</div>
+                        <div class="stat-label">Horas Juntos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">❤️</div>
+                        <div class="stat-value" id="heartbeats">0</div>
+                        <div class="stat-label">Batidas do Coração</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💬</div>
+                        <div class="stat-value" id="messages">0</div>
+                        <div class="stat-label">Mensagens Trocadas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📸</div>
+                        <div class="stat-value" id="memories">0</div>
+                        <div class="stat-label">Memórias</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção Linha do Tempo -->
+            <section id="timeline" class="section">
+                <div class="section-header">
+                    <h2>📅 Nossa Jornada</h2>
+                    <p>Cada mês, uma nova história</p>
+                </div>
+                <div class="timeline-container" id="timelineContainer"></div>
+            </section>
+
+            <!-- Seção Galeria -->
+            <section id="gallery" class="section">
+                <div class="section-header">
+                    <h2>📸 Memórias Inesquecíveis</h2>
+                    <p>Clique nas fotos para reviver os momentos</p>
+                </div>
+                <div class="gallery-grid" id="galleryGrid"></div>
+            </section>
+
+            <!-- Seção Cápsula do Tempo -->
+            <section id="capsule" class="section">
+                <div class="section-header">
+                    <h2>📦 Cápsula do Tempo</h2>
+                    <p>Mensagens especiais que só poderão ser abertas no futuro</p>
+                </div>
+                <div class="capsule-container" id="capsuleContainer"></div>
+                <button class="btn-add-capsule" id="addCapsuleBtn">+ Adicionar Nova Mensagem</button>
+            </section>
+
+            <!-- Seção Quiz -->
+            <section id="quiz" class="section">
+                <div class="section-header">
+                    <h2>🎯 Quiz do Amor</h2>
+                    <p>Teste o quanto você conhece nossa história</p>
+                </div>
+                <div class="quiz-container" id="quizContainer"></div>
+            </section>
+        </main>
+
+        <div class="modal" id="modal">
+            <div class="modal-content">
+                <span class="modal-close">&times;</span>
+                <div class="modal-body"></div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
