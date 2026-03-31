@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_KEY = '$2a$10$erOOPlaBzVzt0KjT8YOvf.U.PpXu//nAFB4MKSb7kFplkjjPF23Ze';
+const API_KEY = '$2a$10$VT4jaGemcXHM1D/o5MldcepqL/qX65.JbMNNLUQrsjXutEIpn1pg2';
 const BIN_ID = '69cb185f856a682189e4086f';
 
 const api = axios.create({
