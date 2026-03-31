@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API_KEY = '$2a$10$VT4jaGemcXHM1D/o5MldcepqL/qX65.JbMNNLUQrsjXutEIpn1pg2';
-const BIN_ID = '69cb185f856a682189e4086f';
+const BIN_ID = '69cb2af1856a682189e4585d';
 
 const api = axios.create({
   baseURL: 'https://api.jsonbin.io/v3',
