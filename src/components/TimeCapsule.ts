@@ -8,125 +8,139 @@ export class TimeCapsule {
     private capsules: TimeCapsuleType[];
     private onAddCallback?: (capsule: TimeCapsuleType) => void;
     private onDeleteCallback?: (id: number) => void;
-    private isLoading: boolean = false;
+    private isLoading: boolean = true;
     
     constructor(containerId: string, modalId: string) {
         this.container = document.getElementById(containerId)!;
         this.modal = document.getElementById(modalId)!;
         this.capsules = [];
         this.setupModal();
-        this.initializeCapsules();
+        this.initialize();
     }
     
-    private async initializeCapsules(): Promise<void> {
-        this.showLoading();
-        await this.loadCapsulesFromAPI();
+    private async initialize(): Promise<void> {
+        await this.loadCapsules();
+        this.isLoading = false;
         this.render();
     }
     
-    private async loadCapsulesFromAPI(): Promise<void> {
+    private async loadCapsules(): Promise<void> {
         try {
-            // Tenta carregar da API primeiro
-            const apiCapsules = await getCapsules();
+            console.log('📦 Carregando cápsulas...');
             
-            if (apiCapsules && apiCapsules.length > 0) {
-                // Converte as datas de string para Date
+            // 1. Tenta carregar da API primeiro
+            const apiCapsules = await getCapsules();
+            console.log('📦 Resposta da API:', apiCapsules);
+            
+            if (apiCapsules && Array.isArray(apiCapsules) && apiCapsules.length > 0) {
+                // Converte os dados da API
                 this.capsules = apiCapsules.map((c: any) => ({
                     ...c,
                     unlockDate: new Date(c.unlockDate),
                     createdAt: new Date(c.createdAt),
                     isUnlocked: DateUtils.isDatePassed(new Date(c.unlockDate))
                 }));
+                console.log('✅ Cápsulas carregadas da API:', this.capsules.length);
                 
-                // Atualiza localStorage como cache
+                // Salva no localStorage como backup
                 localStorage.setItem('timeCapsules', JSON.stringify(this.capsules));
                 return;
             }
-        } catch (error) {
-            console.error('Erro ao carregar da API:', error);
-            this.showToast('Erro ao sincronizar dados. Usando dados locais.', 'error');
-        }
-        
-        // Fallback: tenta carregar do localStorage
-        const saved = localStorage.getItem('timeCapsules');
-        if (saved) {
-            const capsules = JSON.parse(saved);
-            this.capsules = capsules.map((c: any) => ({
-                ...c,
-                unlockDate: new Date(c.unlockDate),
-                createdAt: new Date(c.createdAt),
-                isUnlocked: DateUtils.isDatePassed(new Date(c.unlockDate))
-            }));
-        } else {
-            // Se não há dados, cria as cápsulas de exemplo
+            
+            // 2. Se não tem na API, tenta localStorage
+            const saved = localStorage.getItem('timeCapsules');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                this.capsules = parsed.map((c: any) => ({
+                    ...c,
+                    unlockDate: new Date(c.unlockDate),
+                    createdAt: new Date(c.createdAt),
+                    isUnlocked: DateUtils.isDatePassed(new Date(c.unlockDate))
+                }));
+                console.log('📦 Cápsulas carregadas do localStorage:', this.capsules.length);
+                
+                // Salva na API para sincronizar
+                await this.saveToAPI();
+                return;
+            }
+            
+            // 3. Cria cápsulas de exemplo
+            console.log('📦 Criando cápsulas de exemplo...');
             this.capsules = this.createExampleCapsules();
-            await this.saveCapsulesToAPI(); // Salva na API imediatamente
+            await this.saveToAPI();
+            console.log('✅ Cápsulas de exemplo criadas:', this.capsules.length);
+            
+        } catch (error) {
+            console.error('❌ Erro ao carregar cápsulas:', error);
+            // Fallback: tenta localStorage
+            const saved = localStorage.getItem('timeCapsules');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                this.capsules = parsed.map((c: any) => ({
+                    ...c,
+                    unlockDate: new Date(c.unlockDate),
+                    createdAt: new Date(c.createdAt),
+                    isUnlocked: DateUtils.isDatePassed(new Date(c.unlockDate))
+                }));
+            } else {
+                this.capsules = this.createExampleCapsules();
+            }
         }
     }
     
     private createExampleCapsules(): TimeCapsuleType[] {
         const now = new Date();
         // Data do início do namoro (ALTERE PARA SUA DATA)
-        const startDate = new Date(2024, 10, 27); // 27 de Novembro de 2024
+        const startDate = new Date(2025, 9, 27); // 27 de Novembro de 2025
         
         return [
             {
-                id: 1,
+                id: Date.now(),
                 title: "📝 Nossa primeira promessa",
                 message: "Prometo te fazer sorrir todos os dias, mesmo nos mais difíceis. Você merece todo o amor do mundo! 💖",
-                unlockDate: startDate, // Já desbloqueada
+                unlockDate: startDate,
                 createdAt: now,
                 isUnlocked: true
             },
             {
-                id: 2,
-                title: "🌟 Meu agradecimento",
-                message: "Obrigado por existir na minha vida. Você trouxe cor para meus dias e sentido para minha existência. Sou grato por cada segundo ao seu lado! 🙏\n\nAgora é sua vez: deixe seu recado e escolha quando ele deverá ser aberto!",
-                unlockDate: new Date(2025, 2, 27), // 27 de Março de 2025
+                id: Date.now() + 1,
+                title: "🌟 Mensagem para o futuro",
+                message: "Escreva aqui uma mensagem especial para abrir no futuro! 💫",
+                unlockDate: new Date(2026, 9, 27), // 27 de Junho de 2026
                 createdAt: now,
-                isUnlocked: DateUtils.isDatePassed(new Date(2025, 2, 27))
+                isUnlocked: false
             },
             {
-                id: 3,
+                id: Date.now() + 2,
                 title: "🎉 1 ano de namoro",
                 message: "Se você está lendo isso, significa que chegamos ao primeiro ano! Parabéns para nós! Que venham muitos mais anos de amor e cumplicidade. Te amo mais a cada dia! 🎊",
-                unlockDate: new Date(2025, 10, 27), // 27 de Novembro de 2025
+                unlockDate: new Date(2026, 9, 27), // 27 de Junho de 2026
                 createdAt: now,
-                isUnlocked: DateUtils.isDatePassed(new Date(2025, 10, 27))
+                isUnlocked: false
             }
         ];
     }
     
-    private async saveCapsulesToAPI(): Promise<void> {
+    private async saveToAPI(): Promise<void> {
         try {
-            // Prepara os dados para salvar (converte Dates para strings)
             const capsulesToSave = this.capsules.map(c => ({
-                ...c,
+                id: c.id,
+                title: c.title,
+                message: c.message,
                 unlockDate: c.unlockDate.toISOString(),
-                createdAt: c.createdAt.toISOString()
+                createdAt: c.createdAt.toISOString(),
+                isUnlocked: c.isUnlocked
             }));
             
             const success = await saveCapsules(capsulesToSave);
             if (success) {
-                // Atualiza cache local
+                console.log('✅ Cápsulas salvas na API');
                 localStorage.setItem('timeCapsules', JSON.stringify(this.capsules));
             }
         } catch (error) {
-            console.error('Erro ao salvar na API:', error);
-            // Ainda salva localmente mesmo se a API falhar
+            console.error('❌ Erro ao salvar na API:', error);
             localStorage.setItem('timeCapsules', JSON.stringify(this.capsules));
-            this.showToast('Erro ao sincronizar com a nuvem. Dados salvos localmente.', 'error');
         }
-    }
-    
-    private showLoading(): void {
-        this.isLoading = true;
-        this.container.innerHTML = `
-            <div style="text-align: center; padding: 3rem;">
-                <div style="font-size: 2rem; animation: spin 1s linear infinite;">⏳</div>
-                <p style="margin-top: 1rem; color: var(--text-secondary);">Carregando cápsulas do tempo...</p>
-            </div>
-        `;
     }
     
     private setupModal(): void {
@@ -141,7 +155,6 @@ export class TimeCapsule {
             }
         });
         
-        // Fechar com ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.modal.classList.contains('active')) {
                 this.modal.classList.remove('active');
@@ -150,9 +163,17 @@ export class TimeCapsule {
     }
     
     render(): void {
-        if (this.isLoading) return;
+        if (this.isLoading) {
+            this.container.innerHTML = `
+                <div style="text-align: center; padding: 3rem;">
+                    <div style="font-size: 2rem; animation: spin 1s linear infinite;">⏳</div>
+                    <p style="margin-top: 1rem;">Carregando cápsulas do tempo...</p>
+                </div>
+            `;
+            return;
+        }
         
-        if (this.capsules.length === 0) {
+        if (!this.capsules || this.capsules.length === 0) {
             this.container.innerHTML = `
                 <div style="text-align: center; padding: 3rem; background: var(--card-bg); border-radius: 20px;">
                     <div style="font-size: 3rem; margin-bottom: 1rem;">📦</div>
@@ -171,19 +192,19 @@ export class TimeCapsule {
             return;
         }
         
-        // Ordena cápsulas: desbloqueadas primeiro, depois por data de desbloqueio
-        const sortedCapsules = [...this.capsules].sort((a, b) => {
+        // Ordena: desbloqueadas primeiro, depois por data
+        const sorted = [...this.capsules].sort((a, b) => {
             if (a.isUnlocked !== b.isUnlocked) {
                 return a.isUnlocked ? -1 : 1;
             }
             return a.unlockDate.getTime() - b.unlockDate.getTime();
         });
         
-        this.container.innerHTML = sortedCapsules.map(capsule => {
+        this.container.innerHTML = sorted.map(capsule => {
             const isUnlocked = DateUtils.isDatePassed(capsule.unlockDate);
             if (isUnlocked !== capsule.isUnlocked) {
                 capsule.isUnlocked = isUnlocked;
-                this.saveCapsulesToAPI(); // Atualiza API quando status muda
+                this.saveToAPI();
             }
             
             return `
@@ -205,16 +226,14 @@ export class TimeCapsule {
         // Adiciona eventos
         this.container.querySelectorAll('.capsule-card').forEach(card => {
             card.addEventListener('click', (e) => {
-                if ((e.target as HTMLElement).classList.contains('capsule-delete-btn')) {
-                    return;
-                }
+                if ((e.target as HTMLElement).classList.contains('capsule-delete-btn')) return;
                 
-                const id = parseInt(card.getAttribute('data-id')!);
+                const id = Number(card.getAttribute('data-id'));
                 const capsule = this.capsules.find(c => c.id === id);
                 if (capsule && capsule.isUnlocked) {
                     this.openCapsule(capsule);
                 } else if (capsule && !capsule.isUnlocked) {
-                    this.showToast(`📅 Esta cápsula estará disponível em ${DateUtils.formatDate(capsule.unlockDate)}`, 'info');
+                    this.showToast(`📅 Disponível em: ${DateUtils.formatDate(capsule.unlockDate)}`, 'info');
                 }
             });
         });
@@ -222,14 +241,15 @@ export class TimeCapsule {
         this.container.querySelectorAll('.capsule-delete-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
-                const id = parseInt(btn.getAttribute('data-id')!);
-                const title = btn.getAttribute('data-title')!;
+                const id = Number(btn.getAttribute('data-id'));
+                const title = btn.getAttribute('data-title') || '';
                 this.confirmDelete(id, title);
             });
         });
     }
     
     private escapeHtml(str: string): string {
+        if (!str) return '';
         return str
             .replace(/&/g, '&amp;')
             .replace(/</g, '&lt;')
@@ -240,9 +260,9 @@ export class TimeCapsule {
     
     private async resetToExamples(): Promise<void> {
         this.capsules = this.createExampleCapsules();
-        await this.saveCapsulesToAPI();
+        await this.saveToAPI();
         this.render();
-        this.showToast('✨ Cápsulas restauradas com sucesso! ✨', 'success');
+        this.showToast('✨ Cápsulas restauradas com sucesso!', 'success');
     }
     
     private confirmDelete(id: number, title: string): void {
@@ -252,28 +272,21 @@ export class TimeCapsule {
                 <div style="text-align: center;">
                     <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
                     <h2>Excluir Cápsula</h2>
-                    <p style="margin: 1rem 0;">Tem certeza que deseja excluir a cápsula <strong>"${this.escapeHtml(title)}"</strong>?</p>
-                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Esta ação não pode ser desfeita e afetará todos os usuários.</p>
+                    <p>Tem certeza que deseja excluir "<strong>${this.escapeHtml(title)}</strong>"?</p>
+                    <p style="color: var(--text-secondary); margin: 1rem 0;">Esta ação afetará todos os usuários.</p>
                     <div style="display: flex; gap: 1rem; justify-content: center;">
-                        <button id="confirmDeleteBtn" style="background: #ff4757; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; color: white; cursor: pointer; font-weight: bold;">
-                            Sim, Excluir
-                        </button>
-                        <button id="cancelDeleteBtn" style="background: var(--card-bg); padding: 0.75rem 1.5rem; border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-primary); cursor: pointer;">
-                            Cancelar
-                        </button>
+                        <button id="confirmDeleteBtn" style="background: #ff4757; padding: 0.5rem 1rem; border: none; border-radius: 6px; color: white; cursor: pointer;">Sim, Excluir</button>
+                        <button id="cancelDeleteBtn" style="background: var(--card-bg); padding: 0.5rem 1rem; border: 1px solid var(--card-border); border-radius: 6px; cursor: pointer;">Cancelar</button>
                     </div>
                 </div>
             `;
             
-            const confirmBtn = document.getElementById('confirmDeleteBtn');
-            const cancelBtn = document.getElementById('cancelDeleteBtn');
-            
-            confirmBtn?.addEventListener('click', async () => {
+            document.getElementById('confirmDeleteBtn')?.addEventListener('click', async () => {
                 await this.deleteCapsule(id);
                 this.modal.classList.remove('active');
             });
             
-            cancelBtn?.addEventListener('click', () => {
+            document.getElementById('cancelDeleteBtn')?.addEventListener('click', () => {
                 this.modal.classList.remove('active');
             });
         }
@@ -281,17 +294,13 @@ export class TimeCapsule {
     }
     
     private async deleteCapsule(id: number): Promise<void> {
-        const index = this.capsules.findIndex(c => c.id === id);
-        if (index !== -1) {
-            this.capsules.splice(index, 1);
-            await this.saveCapsulesToAPI();
-            this.render();
-            
-            this.showToast('✅ Cápsula excluída com sucesso!', 'success');
-            
-            if (this.onDeleteCallback) {
-                this.onDeleteCallback(id);
-            }
+        this.capsules = this.capsules.filter(c => c.id !== id);
+        await this.saveToAPI();
+        this.render();
+        this.showToast('✅ Cápsula excluída com sucesso!', 'success');
+        
+        if (this.onDeleteCallback) {
+            this.onDeleteCallback(id);
         }
     }
     
@@ -333,7 +342,6 @@ export class TimeCapsule {
         `;
         
         document.body.appendChild(toast);
-        
         setTimeout(() => toast.remove(), 3000);
     }
     
@@ -344,21 +352,16 @@ export class TimeCapsule {
                 <div style="text-align: center;">
                     <div style="font-size: 3rem; margin-bottom: 1rem;">📦✨</div>
                     <h2>${this.escapeHtml(capsule.title)}</h2>
-                    <p style="margin: 1rem 0; font-size: 1.1rem; line-height: 1.6; white-space: pre-wrap;">${this.escapeHtml(capsule.message)}</p>
+                    <p style="margin: 1rem 0; line-height: 1.6; white-space: pre-wrap;">${this.escapeHtml(capsule.message)}</p>
                     <hr style="margin: 1rem 0; border-color: var(--card-border);">
-                    <small style="color: var(--text-secondary);">
-                        Criado em: ${DateUtils.formatDate(capsule.createdAt)}
-                    </small>
+                    <small>Criado em: ${DateUtils.formatDate(capsule.createdAt)}</small>
                     <div style="margin-top: 1.5rem;">
-                        <button id="deleteFromModalBtn" style="background: #ff4757; padding: 0.5rem 1rem; border: none; border-radius: 6px; color: white; cursor: pointer;">
-                            🗑️ Excluir esta cápsula
-                        </button>
+                        <button id="deleteFromModalBtn" style="background: #ff4757; padding: 0.5rem 1rem; border: none; border-radius: 6px; color: white; cursor: pointer;">🗑️ Excluir</button>
                     </div>
                 </div>
             `;
             
-            const deleteBtn = document.getElementById('deleteFromModalBtn');
-            deleteBtn?.addEventListener('click', () => {
+            document.getElementById('deleteFromModalBtn')?.addEventListener('click', () => {
                 this.modal.classList.remove('active');
                 this.confirmDelete(capsule.id, capsule.title);
             });
@@ -373,22 +376,16 @@ export class TimeCapsule {
             createdAt: new Date(),
             isUnlocked: DateUtils.isDatePassed(capsule.unlockDate)
         };
+        
         this.capsules.push(newCapsule);
-        await this.saveCapsulesToAPI();
+        await this.saveToAPI();
         this.render();
         
         if (this.onAddCallback) {
             this.onAddCallback(newCapsule);
         }
         
-        this.showToast('✨ Cápsula criada e compartilhada! ✨', 'success');
-    }
-    
-    async syncWithAPI(): Promise<void> {
-        this.showLoading();
-        await this.loadCapsulesFromAPI();
-        this.render();
-        this.showToast('📦 Dados sincronizados com a nuvem!', 'success');
+        this.showToast('✨ Cápsula criada e compartilhada!', 'success');
     }
     
     onAdd(callback: (capsule: TimeCapsuleType) => void): void {
@@ -399,14 +396,11 @@ export class TimeCapsule {
         this.onDeleteCallback = callback;
     }
     
-    reload(): void {
-        this.syncWithAPI();
-    }
-    
-    async forceResetToNewExamples(): Promise<void> {
-        this.capsules = this.createExampleCapsules();
-        await this.saveCapsulesToAPI();
+    async reload(): Promise<void> {
+        this.isLoading = true;
         this.render();
-        this.showToast('✨ Cápsulas resetadas com sucesso! ✨', 'success');
+        await this.loadCapsules();
+        this.isLoading = false;
+        this.render();
     }
 }

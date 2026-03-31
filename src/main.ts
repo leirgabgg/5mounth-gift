@@ -44,6 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', () => {
         handleOrientationChange();
     });
+    
+    window.timeCapsule = timeCapsule;
 });
 
 function setupNavigation() {
